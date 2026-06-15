@@ -1,32 +1,19 @@
-const { Client, GatewayIntentBits } = require("discord.js");
+✔️ Step 3 — Make it stronger (important upgrade)
 
-const client = new Client({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates],
-});
+Replace your loop with this improved version:
 
-const TOKEN = process.env.TOKEN;
+setInterval(async () => {
+  for (const [id, name] of Object.entries(channels)) {
+    try {
+      const ch = await client.channels.fetch(id);
 
-// Channel names you want locked
-const channels = {
-  "1497331135812735097": "Ometv",
-  "1455095240418656400": "Room",
-  "1478606822293242039": "Studio",
-  "1506317305817338018": "Oc",
-};
-
-client.on("ready", () => {
-  console.log(`Logged in as ${client.user.tag}`);
-
-  setInterval(async () => {
-    for (const [id, name] of Object.entries(channels)) {
-      const ch = await client.channels.fetch(id).catch(() => null);
-      if (!ch) continue;
-
-      if (ch.name !== name) {
-        ch.setName(name).catch(() => {});
+      if (ch && ch.name !== name) {
+        await ch.setName(name);
+        console.log(`Updated: ${id}`);
       }
-    }
-  }, 10000);
-});
 
-client.login(TOKEN);
+    } catch (err) {
+      console.log(`Failed ${id}:`, err.message);
+    }
+  }
+}, 10000);
